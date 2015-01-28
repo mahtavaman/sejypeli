@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C# Express 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TANKKIPELI 2015", "TANKKIPELI 2015\TANKKIPELI 2015\TANKKIPELI 2015.csproj", "{DBE88E70-851A-4030-9673-FAE01BBE99BE}"
+EndProject
+Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "TANKKIPELI 2015Content", "TANKKIPELI 2015\TANKKIPELI 2015Content\TANKKIPELI 2015Content.contentproj", "{B657C010-1C60-447D-9E3E-661B6F99CB56}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DBE88E70-851A-4030-9673-FAE01BBE99BE}.Debug|x86.ActiveCfg = Debug|x86
+		{DBE88E70-851A-4030-9673-FAE01BBE99BE}.Debug|x86.Build.0 = Debug|x86
+		{DBE88E70-851A-4030-9673-FAE01BBE99BE}.Release|x86.ActiveCfg = Release|x86
+		{DBE88E70-851A-4030-9673-FAE01BBE99BE}.Release|x86.Build.0 = Release|x86
+		{B657C010-1C60-447D-9E3E-661B6F99CB56}.Debug|x86.ActiveCfg = Debug|x86
+		{B657C010-1C60-447D-9E3E-661B6F99CB56}.Release|x86.ActiveCfg = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
