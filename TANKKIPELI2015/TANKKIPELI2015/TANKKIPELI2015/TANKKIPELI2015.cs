@@ -9,6 +9,12 @@ using Jypeli.Widgets;
 public class TANKKIPELI2015 : PhysicsGame
 {
     Tank pelaaja;
+    Vector nopeusYlos = new Vector(0, 200);
+    Vector nopeusAlas = new Vector(0, -200);
+    Vector nopeusVasen = new Vector(-200, 0);
+    Vector nopeusoikea = new Vector(200, 0);
+    Image neliomiehenkuva = LoadImage("neliömies");
+
     public override void Begin()
     {
         LuoKentta();
@@ -33,6 +39,7 @@ public class TANKKIPELI2015 : PhysicsGame
 
         //2. Kerrotaan mitä aliohjelmaa kutsutaan, kun tietyn värinen pikseli tulee vastaan kuvatiedostossa.
         ruudut.SetTileMethod(Color.FromHexCode("00FF21"), LuoPelaaja);
+        ruudut.SetTileMethod(Color.FromHexCode("0026FF"), LuoNeliomies);
         ruudut.SetTileMethod(Color.Black, LuoTaso);
 
 
@@ -51,17 +58,31 @@ public class TANKKIPELI2015 : PhysicsGame
     void AsetaOhjaimet()
     {
         Keyboard.Listen(Key.Space, ButtonState.Down, Ammunta, "ampuu tankilla");
-        Keyboard.Listen(Key.Up, ButtonState.Down, Ylosliikunta, "liikkuu ylös");
-        Keyboard.Listen(Key.Down, ButtonState.Down, Alasliikunta, "liikkuu alas");
-        Keyboard.Listen(Key.Left, ButtonState.Down, Vasemmalleliikunta, "liikkuu vasemmalle");
-        Keyboard.Listen(Key.Right, ButtonState.Down, Oikealleliikunta, "liikkuu oikealle");
+        Keyboard.Listen(Key.Up, ButtonState.Down, TankkiLiikkuu, "liikkuu ylös",nopeusYlos);
+        Keyboard.Listen(Key.Up, ButtonState.Released, TankkiLiikkuu, "pysähtyy",Vector.Zero);
+        Keyboard.Listen(Key.Down, ButtonState.Down, TankkiLiikkuu, "liikkuu alas",nopeusAlas);
+        Keyboard.Listen(Key.Down, ButtonState.Released, TankkiLiikkuu, "pysähtyy",Vector.Zero);
+        Keyboard.Listen(Key.Left, ButtonState.Down, TankkiLiikkuu, "liikkuu vasemmalle",nopeusVasen);
+        Keyboard.Listen(Key.Left, ButtonState.Released, TankkiLiikkuu, "pysähtyy",Vector.Zero);
+        Keyboard.Listen(Key.Right, ButtonState.Down, TankkiLiikkuu, "liikkuu oikealle",nopeusoikea);
+        Keyboard.Listen(Key.Right, ButtonState.Released, TankkiLiikkuu, "pysähtyy",Vector.Zero);                               
     }
     void Ammunta()
     {
         pelaaja.Shoot();
     }
-    void LiikutaPelaajaaYlos()
+    void TankkiLiikkuu(Vector nopeus)
     {
-         pelaaja.
+        pelaaja.Velocity = nopeus;
     }
+
+
+    void LuoNeliomies(Vector paikka, double leveys, double korkeus)
+    {
+        pelaaja = new Tank(90, 70);
+        pelaaja.Position = paikka;
+
+        Add(pelaaja);
+    }
+
 }
