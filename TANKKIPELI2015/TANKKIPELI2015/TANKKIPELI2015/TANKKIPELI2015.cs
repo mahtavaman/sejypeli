@@ -9,11 +9,16 @@ using Jypeli.Widgets;
 public class TANKKIPELI2015 : PhysicsGame
 {
     Tank pelaaja;
+    PhysicsObject o;
     Vector nopeusYlos = new Vector(0, 200);
     Vector nopeusAlas = new Vector(0, -200);
     Vector nopeusVasen = new Vector(-200, 0);
     Vector nopeusoikea = new Vector(200, 0);
     Image neliomiehenkuva = LoadImage("neliömies");
+    IntMeter pisteLaskuri;
+    IntMeter ElamaLaskuri;
+    FollowerBrain seuraajanAivot;
+    Image taustaKuva = LoadImage("kenttatausta");
 
     public override void Begin()
     {
@@ -22,6 +27,11 @@ public class TANKKIPELI2015 : PhysicsGame
 
         PhoneBackButton.Listen(ConfirmExit, "Lopeta peli");
         Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
+        LuoPistelaskuri();
+        pisteLaskuri.AddTrigger(0, TriggerDirection.Up, TuhoaTankki);
+        LuoElamaLaskuri();
+        Level.Background.Image = taustaKuva;
+        Level.Background.FitToLevel();
     }
 
     void LuoPelaaja(Vector paikka, double leveys, double korkeus)
@@ -29,6 +39,13 @@ public class TANKKIPELI2015 : PhysicsGame
         //PhysicsObject pelaaja = new PhysicsObject(10, 10);
         pelaaja = new Tank(90, 70);
         pelaaja.Position = paikka;
+        AddCollisionHandler(pelaaja, PelaajaTormasi);
+        pelaaja.Cannon.ProjectileCollision = AmmusOsui;
+        pelaaja.Tag = "v";
+
+        pelaaja.Cannon.Ammo.Value = 1000000;
+
+        pelaaja.Restitution = 1.0;
 
         Add(pelaaja);
     }
@@ -41,11 +58,14 @@ public class TANKKIPELI2015 : PhysicsGame
         ruudut.SetTileMethod(Color.FromHexCode("00FF21"), LuoPelaaja);
         ruudut.SetTileMethod(Color.FromHexCode("0026FF"), LuoNeliomies);
         ruudut.SetTileMethod(Color.Black, LuoTaso);
-
+         
 
         //3. Execute luo kentän
         //   Parametreina leveys ja korkeus
         ruudut.Execute(20, 20);
+        seuraajanAivot = new FollowerBrain(pelaaja);
+        o.Brain = seuraajanAivot;
+        seuraajanAivot.Speed = 90; 
     }
     void LuoTaso(Vector paikka, double leveys, double korkeus)
     {
@@ -62,11 +82,13 @@ public class TANKKIPELI2015 : PhysicsGame
         Keyboard.Listen(Key.Up, ButtonState.Released, TankkiLiikkuu, "pysähtyy",Vector.Zero);
         Keyboard.Listen(Key.Down, ButtonState.Down, TankkiLiikkuu, "liikkuu alas",nopeusAlas);
         Keyboard.Listen(Key.Down, ButtonState.Released, TankkiLiikkuu, "pysähtyy",Vector.Zero);
-        Keyboard.Listen(Key.Left, ButtonState.Down, TankkiLiikkuu, "liikkuu vasemmalle",nopeusVasen);
+        Keyboard.Listen(Key.Left, ButtonState.Down, TankkiLiikkuu, "liikkuu vasemmalle",nopeusVasen); 
         Keyboard.Listen(Key.Left, ButtonState.Released, TankkiLiikkuu, "pysähtyy",Vector.Zero);
         Keyboard.Listen(Key.Right, ButtonState.Down, TankkiLiikkuu, "liikkuu oikealle",nopeusoikea);
-        Keyboard.Listen(Key.Right, ButtonState.Released, TankkiLiikkuu, "pysähtyy",Vector.Zero);                               
-    }
+        Keyboard.Listen(Key.Right, ButtonState.Released, TankkiLiikkuu, "pysähtyy",Vector.Zero);
+        Keyboard.Listen(Key.K, ButtonState.Down, NeliomiesKuolee, "kuolee");
+                      
+    }  
     void Ammunta()
     {
         pelaaja.Shoot();
@@ -79,10 +101,101 @@ public class TANKKIPELI2015 : PhysicsGame
 
     void LuoNeliomies(Vector paikka, double leveys, double korkeus)
     {
-        pelaaja = new Tank(90, 70);
-        pelaaja.Position = paikka;
+        o = new PhysicsObject (90, 70);
+        o.Position = paikka;
+        o.Image = neliomiehenkuva;
+        o.Tag ="p";
 
-        Add(pelaaja);
+        o.Restitution = 1.0;
+        Add(o);
+       
+    
+
+    }
+   
+    
+    void PelaajaTormasi(PhysicsObject tormaaja, PhysicsObject kohde)
+    {
+        if(kohde.Tag == "p")
+        { 
+            ElamaLaskuri.Value -= 1;
+            if (ElamaLaskuri.Value == 0) 
+            { 
+            tormaaja.Destroy();
+            }
+
+           
+            
+        }
     }
 
+    void NeliomiesKuolee()
+    {
+        o.Destroy();
+    
+    
+    }
+    void AmmusOsui(PhysicsObject ammus, PhysicsObject kohde)
+    {
+        ammus.Destroy();
+        //ammus.Destroy();
+  Explosion rajahdys = new Explosion(50);
+        rajahdys.Position = kohde.Position;
+        Add(rajahdys);
+        rajahdys.Speed = 500.0;
+        rajahdys.Force = 1000;
+        if (kohde.Tag == "p")
+        { 
+            pisteLaskuri.Value += 1;
+            seuraajanAivot.Speed += 5;
+           // if (pisteLaskuri.Value == 10)
+            //{
+             //   seuraajanAivot.Speed = 180;
+            //}
+        }
+
+
+    }
+
+
+    
+
+    void LuoPistelaskuri()
+    {
+        pisteLaskuri = new IntMeter(0);
+
+        Label pisteNaytto = new Label();
+        pisteNaytto.X = Screen.Left + 100;
+        pisteNaytto.Y = Screen.Top - 100;
+        pisteNaytto.TextColor = Color.Black;
+        pisteNaytto.Color = Color.White;
+
+        pisteNaytto.BindTo(pisteLaskuri);
+        Add(pisteNaytto);
+    }
+
+    void TuhoaTankki()
+    {
+        pelaaja.Destroy();
+        ElamaLaskuri.Value -= 1;
+        if(ElamaLaskuri.Value==0)
+        {
+            pelaaja.Destroy();
+        } 
+            
+    }
+
+    void LuoElamaLaskuri()
+    {
+        ElamaLaskuri = new IntMeter(5);
+
+        Label pisteNaytto = new Label();
+        pisteNaytto.X = Screen.Right - 100;
+        pisteNaytto.Y = Screen.Top - 100;
+        pisteNaytto.TextColor = Color.Black;
+        pisteNaytto.Color = Color.White;
+
+        pisteNaytto.BindTo(ElamaLaskuri);
+        Add(pisteNaytto);
+    }
 }
