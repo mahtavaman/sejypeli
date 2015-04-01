@@ -19,9 +19,11 @@ public class TANKKIPELI2015 : PhysicsGame
     IntMeter ElamaLaskuri;
     FollowerBrain seuraajanAivot;
     Image taustaKuva = LoadImage("kenttatausta");
+    private Animation sairaannopee;
 
     public override void Begin()
     {
+        sairaannopee = LoadAnimation("sairaannopee");
         LuoKentta();
         AsetaOhjaimet();
 
@@ -32,6 +34,7 @@ public class TANKKIPELI2015 : PhysicsGame
         LuoElamaLaskuri();
         Level.Background.Image = taustaKuva;
         Level.Background.FitToLevel();
+        
     }
 
     void LuoPelaaja(Vector paikka, double leveys, double korkeus)
@@ -58,7 +61,7 @@ public class TANKKIPELI2015 : PhysicsGame
         ruudut.SetTileMethod(Color.FromHexCode("00FF21"), LuoPelaaja);
         ruudut.SetTileMethod(Color.FromHexCode("0026FF"), LuoNeliomies);
         ruudut.SetTileMethod(Color.Black, LuoTaso);
-         
+        ruudut.SetTileMethod(Color.FromHexCode ("FFD800"), LuoPikkunelio);
 
         //3. Execute luo kentän
         //   Parametreina leveys ja korkeus
@@ -137,16 +140,22 @@ public class TANKKIPELI2015 : PhysicsGame
     }
     void AmmusOsui(PhysicsObject ammus, PhysicsObject kohde)
     {
-        ammus.Destroy();
-        //ammus.Destroy();
-  Explosion rajahdys = new Explosion(50);
-        rajahdys.Position = kohde.Position;
-        Add(rajahdys);
-        rajahdys.Speed = 500.0;
-        rajahdys.Force = 1000;
+       ammus.Destroy();
+        if (kohde.Tag != "pikku") 
+        {       
+            
+          
+          Explosion rajahdys = new Explosion(50);
+          rajahdys.Position = kohde.Position;
+            Add(rajahdys);
+           rajahdys.Speed = 500.0;
+           rajahdys.Force = 1000;
+        }
         if (kohde.Tag == "p")
         { 
-            pisteLaskuri.Value += 1;
+            
+           pisteLaskuri.Value += 1;
+            if (pisteLaskuri.Value == 79
             seuraajanAivot.Speed += 5;
            // if (pisteLaskuri.Value == 10)
             //{
@@ -197,5 +206,18 @@ public class TANKKIPELI2015 : PhysicsGame
 
         pisteNaytto.BindTo(ElamaLaskuri);
         Add(pisteNaytto);
+    }
+
+    void LuoPikkunelio(Vector paikka, double leveys, double korkeus)
+    {
+        PhysicsObject m = PhysicsObject.CreateStaticObject(90, 70);
+        m.Position = paikka;
+        Add(m);
+        m.Color = Color.Blue;
+        m.Tag = "pikku";
+        m.Animation = new Animation(sairaannopee);
+        m.Animation.Start(1);   
+        m.Animation.Stop();
+        m.Animation.FPS = 10;
     }
 }
