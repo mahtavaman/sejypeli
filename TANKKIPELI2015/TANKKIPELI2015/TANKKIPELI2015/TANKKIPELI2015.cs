@@ -20,6 +20,7 @@ public class TANKKIPELI2015 : PhysicsGame
     FollowerBrain seuraajanAivot;
     Image taustaKuva = LoadImage("kenttatausta");
     private Animation sairaannopee;
+    PhysicsObject m;
 
     public override void Begin()
     {
@@ -119,7 +120,7 @@ public class TANKKIPELI2015 : PhysicsGame
     
     void PelaajaTormasi(PhysicsObject tormaaja, PhysicsObject kohde)
     {
-        if(kohde.Tag == "p")
+        if(kohde.Tag.ToString() == "p")
         { 
             ElamaLaskuri.Value -= 1;
             if (ElamaLaskuri.Value == 0) 
@@ -141,7 +142,7 @@ public class TANKKIPELI2015 : PhysicsGame
     void AmmusOsui(PhysicsObject ammus, PhysicsObject kohde)
     {
        ammus.Destroy();
-        if (kohde.Tag != "pikku") 
+        if (kohde.Tag.ToString() != "pikku") 
         {       
             
           
@@ -151,11 +152,14 @@ public class TANKKIPELI2015 : PhysicsGame
            rajahdys.Speed = 500.0;
            rajahdys.Force = 1000;
         }
-        if (kohde.Tag == "p")
+        if (kohde.Tag.ToString() == "p")
         { 
             
            pisteLaskuri.Value += 1;
-            if (pisteLaskuri.Value == 79
+           if (pisteLaskuri.Value == 7)
+           {
+               m.Animation.Start(4);
+           }
             seuraajanAivot.Speed += 5;
            // if (pisteLaskuri.Value == 10)
             //{
@@ -210,14 +214,14 @@ public class TANKKIPELI2015 : PhysicsGame
 
     void LuoPikkunelio(Vector paikka, double leveys, double korkeus)
     {
-        PhysicsObject m = PhysicsObject.CreateStaticObject(90, 70);
+        m = PhysicsObject.CreateStaticObject(90, 70);
         m.Position = paikka;
         Add(m);
         m.Color = Color.Blue;
         m.Tag = "pikku";
         m.Animation = new Animation(sairaannopee);
-        m.Animation.Start(1);   
-        m.Animation.Stop();
+          
+       // m.Animation.Stop();
         m.Animation.FPS = 10;
     }
 }
